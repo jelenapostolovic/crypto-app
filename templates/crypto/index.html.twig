@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Crypto Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .btn-group .btn {
+            margin-right: 5px; /* Adjust the space between buttons */
+        }
+        .search-section {
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Crypto Dashboard</a>
+        <div class="collapse navbar-collapse">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="api/cryptos">All Cryptos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/api/recent-update">Recent Updates</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/api/crypto-lowest-prices">Lowest Prices</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <h1 class="text-center">Welcome to Crypto Dashboard</h1>
+        <p class="text-center">Use the navigation to explore cryptos and API functionalities.</p>
+
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Search Cryptos</h2>
+                
+                <div class="search-section">
+                    <h5>By ID</h5>
+                    <input type="text" id="crypto-id-input" placeholder="Enter Crypto ID" class="form-control mb-2" />
+                    <button id="search-crypto-id-button" class="btn btn-primary">Search by ID</button>
+                </div>
+
+                <div class="search-section">
+                    <h5>By Symbol</h5>
+                    <input type="text" id="crypto-symbol-input" placeholder="Enter Crypto Symbol" class="form-control mb-2" />
+                    <button id="search-crypto-symbol-button" class="btn btn-primary">Search by Symbol</button>
+                </div>
+
+                <div class="search-section">
+                    <h5>By Price Range</h5>
+                    <input type="number" id="min-price-input" placeholder="Min Price" class="form-control mb-2" />
+                    <button id="search-min-price-button" class="btn btn-primary">Search Min Price</button>
+                </div>
+
+                <div class="search-section">
+                    <input type="number" id="max-price-input" placeholder="Max Price" class="form-control mb-2" />
+                    <button id="search-max-price-button" class="btn btn-primary">Search Max Price</button>
+                </div>
+
+                <h2>Create new Crypto</h2>
+
+                <!-- Form for creating a new crypto -->
+                <form action="{{ path('crypto_create') }}" method="post" class="mb-4">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="symbol">Symbol</label>
+                        <input type="text" id="symbol" name="symbol" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="price">Current Price</label>
+                        <input type="number" id="price" name="price" step="0.01" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="totalVolume">Total Volume</label>
+                        <input type="number" id="totalVolume" name="totalVolume" step="0.01" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="ath">ATH</label>
+                        <input type="number" id="ath" name="ath" step="0.01" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="athDate">ATH Date</label>
+                        <input type="date" id="athDate" name="athDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="atl">ATL</label>
+                        <input type="number" id="atl" name="atl" step="0.01" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="atlDate">ATL Date</label>
+                        <input type="date" id="atlDate" name="atlDate" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Create Crypto</button>
+                </form>
+
+                <h2>Available Cryptos</h2>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Symbol</th>
+                            <th>Current Price</th>
+                            <th>Total Volume</th>
+                            <th>ATH</th>
+                            <th>ATH Date</th>
+                            <th>ATL</th>
+                            <th>ATL Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Render crypto data -->
+                        {% for crypto in cryptos %}
+                            <tr>
+                                <td>{{ crypto.id }}</td>
+                                <td>{{ crypto.name }}</td>
+                                <td>{{ crypto.symbol }}</td>
+                                <td>{{ crypto.currentPrice }}</td>
+                                <td>{{ crypto.totalVolume }}</td>
+                                <td>{{ crypto.ath }}</td>
+                                <td>{{ crypto.athDate ? crypto.athDate|date('Y-m-d') : '' }}</td>
+                                <td>{{ crypto.atl }}</td>
+                                <td>{{ crypto.atlDate ? crypto.atlDate|date('Y-m-d') : '' }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ path('crypto_update', {'id': crypto.id}) }}" class="btn btn-warning btn-sm">Update</a>
+                                        <form action="{{ path('crypto_delete', {'id': crypto.id}) }}" method="post" style="display:inline;">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-light text-center text-lg-start mt-5">
+        <div class="text-center p-3">
+            © 2024 Crypto Dashboard | <a href="https://crypto.com/">Crypto Trading Platform</a>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const searchButtonId = document.getElementById('search-crypto-id-button');
+            const searchButtonSymbol = document.getElementById('search-crypto-symbol-button');
+            const searchButtonMinPrice = document.getElementById('search-min-price-button');
+            const searchButtonMaxPrice = document.getElementById('search-max-price-button');
+
+            searchButtonId.addEventListener('click', () => {
+                const id = document.getElementById('crypto-id-input').value.trim();
+                if (id) {
+                    window.location.href = `/api/crypto-currency-detail/${id}`;
+                } else {
+                    alert('Please enter a valid ID');
+                }
+            });
+
+            searchButtonSymbol.addEventListener('click', () => {
+                const symbol = document.getElementById('crypto-symbol-input').value.trim();
+                if (symbol) {
+                    window.location.href = `/api/crypto-currency/${symbol}`;
+                } else {
+                    alert('Please enter a valid Symbol');
+                }
+            });
+
+            searchButtonMinPrice.addEventListener('click', () => {
+                const min = document.getElementById('min-price-input').value.trim();
+                if (min) {
+                    window.location.href = `/api/crypto-currency?min=${encodeURIComponent(min)}`;
+                } else {
+                    alert('Please enter a valid Min Price');
+                }
+            });
+
+            searchButtonMaxPrice.addEventListener('click', () => {
+                const max = document.getElementById('max-price-input').value.trim();
+                if (max) {
+                    window.location.href = `/api/crypto-currency?max=${encodeURIComponent(max)}`;
+                } else {
+                    alert('Please enter a valid Max Price');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
